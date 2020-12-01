@@ -36,12 +36,18 @@
 
 BUILD_DIR="$1"
 PREFIX_DIR="$2"
+GUAC_VER="$3"
 
 #
 # Build guacamole-server
 #
 
 cd "$BUILD_DIR"
+curl -SLO "http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${GUAC_VER}/source/guacamole-server-${GUAC_VER}.tar.gz"
+tar -xzf guacamole-server-${GUAC_VER}.tar.gz
+cd guacamole-server-${GUAC_VER}
+mv * ../
+cd ..
 autoreconf -fi
 ./configure --prefix="$PREFIX_DIR" --disable-guaclog --with-freerdp-plugin-dir="$PREFIX_DIR/lib/freerdp2"
 make
