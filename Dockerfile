@@ -67,9 +67,11 @@ RUN apt-get update                         && \
 COPY scripts "${PREFIX_DIR}/bin/"
 
 # Build guacamole-server from local source
+RUN chmod -R 777 ${PREFIX_DIR}/bin/build-guacd.sh
 RUN ${PREFIX_DIR}/bin/build-guacd.sh "$BUILD_DIR" "$PREFIX_DIR" "$GUAC_VER"
 
 # Record the packages of all runtime library dependencies
+RUN chmod -R 777 ${PREFIX_DIR}/bin/list-dependencies.sh
 RUN ${PREFIX_DIR}/bin/list-dependencies.sh    \
         ${PREFIX_DIR}/sbin/guacd              \
         ${PREFIX_DIR}/lib/libguac-client-*.so \
@@ -110,6 +112,7 @@ RUN apt-get update                                                              
     rm -rf /var/lib/apt/lists/*
 
 # Link FreeRDP plugins into proper path
+RUN chmod -R 777 ${PREFIX_DIR}/bin/link-freerdp-plugins.sh
 RUN ${PREFIX_DIR}/bin/link-freerdp-plugins.sh \
         ${PREFIX_DIR}/lib/freerdp2/libguac*.so
 
