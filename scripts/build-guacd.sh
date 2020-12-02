@@ -41,7 +41,7 @@ GUAC_VER="$3"
 #
 # Build guacamole-server
 #
-
+mkdir "$BUILD_DIR"
 cd "$BUILD_DIR"
 curl -SLO "http://apache.org/dyn/closer.cgi?action=download&filename=guacamole/${GUAC_VER}/source/guacamole-server-${GUAC_VER}.tar.gz"
 tar -xzf guacamole-server-${GUAC_VER}.tar.gz
