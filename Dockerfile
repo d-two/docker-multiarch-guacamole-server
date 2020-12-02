@@ -56,6 +56,7 @@ ARG BUILD_DEPENDENCIES="              \
         libvncserver-dev              \
         libwebsockets-dev             \
         libwebp-dev                   \
+        curl                          \
         make"
 
 # Bring build environment up to date and install build dependencies
