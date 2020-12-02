@@ -44,6 +44,9 @@ ARG BUILD_DEPENDENCIES="              \
         automake                      \
         freerdp2-dev                  \
         gcc                           \
+        libavcodec-dev                \
+        libavformat-dev               \
+        libavutil-dev                 \
         libcairo2-dev                 \
         libjpeg62-turbo-dev           \
         libossp-uuid-dev              \
@@ -51,9 +54,11 @@ ARG BUILD_DEPENDENCIES="              \
         libpulse-dev                  \
         libssh2-1-dev                 \
         libssl-dev                    \
+        libswscale-dev                \
         libtelnet-dev                 \
         libtool                       \
         libvncserver-dev              \
+        libvorbis-dev                 \
         libwebsockets-dev             \
         libwebp-dev                   \
         curl                          \
