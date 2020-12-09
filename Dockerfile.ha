@@ -1,11 +1,31 @@
-ARG BASE_IMAGE_PREFIX
+ARG BUILD_FROM=hassioaddons/base-aarch64:8.0.6
+FROM $BUILD_FROM AS builder
 
-FROM multiarch/qemu-user-static as qemu
+ARG BUILD_DEPENDENCIES="\
+autoconf                \
+automake                \
+libtool                 \
+build-base              \
+cairo-dev               \
+libjpeg-turbo-dev       \
+libpng-dev              \
+ffmpeg-dev              \
+freerdp-dev             \
+pango-dev               \
+libssh2-dev             \
+libvncserver-dev        \
+pulseaudio-dev          \
+openssl-dev             \
+libvorbis-dev           \
+libwebp-dev             \
+perl                    \
+libwebsockets-dev       \
+cunit-dev"
 
-# Use Debian as base for the build
-FROM ${BASE_IMAGE_PREFIX}debian:stable AS builder
+#ossp-uuid-dev           \
 
-COPY --from=qemu /usr/bin/qemu-*-static /usr/bin/
+# Bring build environment up to date and install build dependencies
+RUN apk add --no-cache $BUILD_DEPENDENCIES
 
 ENV GUAC_VER=1.2.0
 
@@ -17,35 +37,6 @@ ARG PREFIX_DIR=/usr/local/guacamole
 
 # Build arguments
 ARG BUILD_DIR=/tmp/guacd-docker-BUILD
-ARG BUILD_DEPENDENCIES="              \
-        autoconf                      \
-        automake                      \
-        freerdp2-dev                  \
-        gcc                           \
-        libavcodec-dev                \
-        libavformat-dev               \
-        libavutil-dev                 \
-        libcairo2-dev                 \
-        libjpeg62-turbo-dev           \
-        libossp-uuid-dev              \
-        libpango1.0-dev               \
-        libpulse-dev                  \
-        libssh2-1-dev                 \
-        libssl-dev                    \
-        libswscale-dev                \
-        libtelnet-dev                 \
-        libtool                       \
-        libvncserver-dev              \
-        libvorbis-dev                 \
-        libwebsockets-dev             \
-        libwebp-dev                   \
-        curl                          \
-        make"
-
-# Bring build environment up to date and install build dependencies
-RUN apt-get update                         && \
-    apt-get install -y $BUILD_DEPENDENCIES && \
-    rm -rf /var/lib/apt/lists/*
 
 # Add configuration scripts
 COPY scripts "${PREFIX_DIR}/bin/"
@@ -62,10 +53,7 @@ RUN ${PREFIX_DIR}/bin/list-dependencies.sh    \
         ${PREFIX_DIR}/lib/freerdp2/guac*.so   \
         > ${PREFIX_DIR}/DEPENDENCIES
 
-# Use same Debian as the base for the runtime image
-FROM ${BASE_IMAGE_PREFIX}debian:stable-slim
-COPY --from=qemu /usr/bin/qemu-*-static /usr/bin/
-
+FROM $BUILD_FROM
 # Base directory for installed build artifacts.
 # Due to limitations of the Docker image build process, this value is
 # duplicated in an ARG in the first stage of the build. See also the
@@ -90,10 +78,10 @@ ARG RUNTIME_DEPENDENCIES="            \
 COPY --from=builder ${PREFIX_DIR} ${PREFIX_DIR}
 
 # Bring runtime environment up to date and install runtime dependencies
-RUN apt-get update                                                                  && \
-    apt-get install -y --no-install-recommends $RUNTIME_DEPENDENCIES                && \
-    apt-get install -y --no-install-recommends $(cat "${PREFIX_DIR}"/DEPENDENCIES)  && \
-    rm -rf /var/lib/apt/lists/*
+#RUN apt-get update                                                                  && \
+#    apt-get install -y --no-install-recommends $RUNTIME_DEPENDENCIES                && \
+#    apt-get install -y --no-install-recommends $(cat "${PREFIX_DIR}"/DEPENDENCIES)  && \
+#    rm -rf /var/lib/apt/lists/*
 
 # Link FreeRDP plugins into proper path
 RUN chmod -R 777 ${PREFIX_DIR}/bin/link-freerdp-plugins.sh
