@@ -26,6 +26,7 @@ cunit-dev"
 
 # Bring build environment up to date and install build dependencies
 RUN apk add --no-cache $BUILD_DEPENDENCIES
+RUN apk add ossp-uuid-dev --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
 ENV GUAC_VER=1.2.0
 
